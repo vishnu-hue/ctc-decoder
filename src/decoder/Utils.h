@@ -15,7 +15,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include "/home/local/ZOHOCORP/vishnu-pt3475/decoder/src/lm/LM.h"
+#include "../../src/lm/LM.h"
 using namespace std; 
 
 namespace w2l {
