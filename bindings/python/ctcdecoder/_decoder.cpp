@@ -9,10 +9,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "/home/local/ZOHOCORP/vishnu-pt3475/decoder/src/decoder/LexiconDecoder.h"
+#include "../../src/decoder/LexiconDecoder.h"
 
 #ifdef W2L_LIBRARIES_USE_KENLM
-#include "/home/local/ZOHOCORP/vishnu-pt3475/decoder/src/lm/KenLM.h"
+#include "../../src/lm/KenLM.h"
 #endif
 
 namespace py = pybind11;
