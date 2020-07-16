@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "/home/local/ZOHOCORP/vishnu-pt3475/decoder/src/common/Dictionary.h"
+#include "../../src/common/Dictionary.h"
 #include "LM.h"
 
 #include <lm/model.hh>
