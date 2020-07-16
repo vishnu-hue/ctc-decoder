@@ -9,32 +9,13 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "/home/local/ZOHOCORP/vishnu-pt3475/decoder/src/decoder/LexiconFreeDecoder.h"
+#include "../../src/decoder/LexiconFreeDecoder.h"
 
 namespace py = pybind11;
 using namespace w2l;
 using namespace py::literals;
 
-/**
- * Some hackery that lets pybind11 handle shared_ptr<void> (for old LMStatePtr).
- * See: https://github.com/pybind/pybind11/issues/820
- * PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>);
- * and inside PYBIND11_MODULE
- *   py::class_<std::shared_ptr<void>>(m, "encapsulated_data");
- */
-
 namespace {
-
-/**
- * A pybind11 "alias type" for abstract class LM, allowing one to subclass LM
- * with a custom LM defined purely in Python. For those who don't want to build
- * with KenLM, or have their own custom LM implementation.
- * See: https://pybind11.readthedocs.io/en/stable/advanced/classes.html
- *
- * TODO: ensure this works. Last time Jeff tried this there were slicing issues,
- * see https://github.com/pybind/pybind11/issues/1546 for workarounds.
- * This is low-pri since we assume most people can just build with KenLM.
- */
 
 void LexiconFreeDecoder_decodeStep(
     LexiconFreeDecoder& decoder,
