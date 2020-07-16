@@ -1,4 +1,28 @@
 # ctc-decoder
+requirements:
+
+kenlm
+
+to build kenlm :
+
+apt-get install zlibc zlib1g zlib1g-dev libeigen3-dev bzip2 liblzma-dev libboost-all-dev
+
+> wget http://kheafield.com/code/kenlm.tar.gz
+
+> tar -xvzf kenlm
+
+> cd kenlm
+
+> mkdir -p build && cd build
+
+> cmake ..
+
+> make -j 4
+
+After installation, do not forget to export the PATH, as :
+
+> export KENLM_ROOT_DIR=/home/kenlm2
+
 Compiling
 
 Use cmake,
