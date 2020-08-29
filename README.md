@@ -10,6 +10,7 @@ apt-get install zlibc zlib1g zlib1g-dev libeigen3-dev bzip2 liblzma-dev libboost
 > wget http://kheafield.com/code/kenlm.tar.gz
 
 > tar -xvzf kenlm
+
 add set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC") to the CmakeList.txt in the kenlm root folder
 
 > cd kenlm
