@@ -130,7 +130,7 @@ if __name__ == "__main__":
     # add repetition symbol as soon as we have ASG acoustic model
     #token_dict.add_entry("1")
     # create Kenlm language model
-    lm = KenLM(os.path.join(data_path, "lm.arpa"), word_dict)
+    lm = KenLM(os.path.join(data_path, "lm.arpa"), word_dict, True)
 
     # test LM
     sentence = ["the", "cat", "sat", "on", "the", "mat"]
