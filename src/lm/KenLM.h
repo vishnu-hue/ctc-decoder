@@ -7,8 +7,16 @@
  */
 
 #pragma once
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
-#include "../../src/common/Dictionary.h"
+#include "lm/enumerate_vocab.hh"
+#include "lm/virtual_interface.hh"
+#include "lm/word_index.hh"
+#include "util/string_piece.hh"
+#include "src/common/Dictionary.h"
 #include "LM.h"
 
 #include <lm/model.hh>
@@ -19,6 +27,16 @@ namespace w2l {
  * indicies and compare functions
  * https://github.com/kpu/kenlm/blob/master/lm/state.hh.
  */
+class RetriveStrEnumerateVocab : public lm::EnumerateVocab {
+public:
+  RetriveStrEnumerateVocab() {}
+
+  void Add(lm::WordIndex index, const StringPiece &str) {
+    vocabulary.push_back(std::string(str.data(), str.length()));
+  }
+
+  std::vector<std::string> vocabulary;
+};
 
 struct KenLMState : LMState {
   lm::ngram::State ken_;
@@ -32,7 +50,7 @@ struct KenLMState : LMState {
  */
 class KenLM : public LM {
  public:
-  KenLM(const std::string& path, const Dictionary& usrTknDict);
+  KenLM(const std::string& path, const Dictionary& usrTknDict, const bool create);
 
   LMStatePtr start(bool startWithNothing) override;
 
