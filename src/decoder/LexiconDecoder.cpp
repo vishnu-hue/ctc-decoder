@@ -90,7 +90,7 @@ void LexiconDecoder::decodeStep(const std::vector<float>& emissions, int T, int 
               n,
               true,
               0,
-              prevHyp.score+amScore+ opt_.lmWeight * lmScore,
+              prevHyp.score+amScore,
               0,
               prevHyp.label,
               prevHyp.lmState,
@@ -111,7 +111,7 @@ void LexiconDecoder::decodeStep(const std::vector<float>& emissions, int T, int 
               n,
               true,
               0,
-              prevHyp.b_score+amScore+ opt_.lmWeight * lmScore,
+              prevHyp.b_score+amScore,
               0,
               prevHyp.label,
               prevHyp.lmState,
@@ -126,7 +126,7 @@ void LexiconDecoder::decodeStep(const std::vector<float>& emissions, int T, int 
            if (!isLmToken_) {
             auto lmStateScorePair = lm_->score(prevHyp.lmState, label);
             lmState = lmStateScorePair.first;
-            lmScore = lmStateScorePair.second - lexMaxScore;
+            lmScore = lmStateScorePair.second;
           }
            candidatesAdd(
               candidates_,
