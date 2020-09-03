@@ -91,7 +91,7 @@ void LexiconFreeDecoder::decodeStep(const std::vector<float>& emissions, int T, 
               prevHyp.label,
               &prevHyp,
               n);
-          if(prevHyp.b_score!=0)
+          if(prevHyp.b_score!=0 && n==prevHyp.token)
           {candidatesAdd(
               candidates_,
               candidatesBestScore_,
