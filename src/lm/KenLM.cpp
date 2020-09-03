@@ -7,24 +7,59 @@
  */
 
 #include "KenLM.h"
-
+#include <fstream>
+#include <iostream>
 #include <stdexcept>
-
+#include <valarray>
 #include <lm/model.hh>
+#include "lm/config.hh"
+#include "lm/model.hh"
+#include "lm/state.hh"
 
+#include "util/string_piece.hh"
+#include "util/tokenize_piece.hh"
+
+using namespace std;
 namespace w2l {
 
-KenLM::KenLM(const std::string& path, const Dictionary& usrTknDict) {
+KenLM::KenLM(const std::string& path, const Dictionary& usrTknDict, const bool create) {
   // Load LM
-  model_.reset(lm::ngram::LoadVirtual(path.c_str()));
+  size_t max_order_=0;
+  std::vector<std::string> vocabulary_;
+  RetriveStrEnumerateVocab enumerate;
+  lm::ngram::Config config;
+  config.enumerate_vocab = &enumerate;
+  model_.reset(lm::ngram::LoadVirtual(path.c_str(), config));
   if (!model_) {
     throw std::runtime_error("[KenLM] LM loading failed.");
+  }
+  max_order_ = static_cast<std::shared_ptr<lm::base::Model>>(model_)->Order();
+  vocabulary_ = enumerate.vocabulary;
+  /*
+  if create is set a new words.lst file will be created which can be used to create a word dict.
+  this can be used when a proper words.lst file is not available for the lm model
+  but the lm should be loaded again with the new word dict created 
+  */
+  if(create){
+  ofstream file;
+  file.open("words.lst");
+  for (size_t i = 0; i < vocabulary_.size(); ++i) {
+    file<<vocabulary_[i]<<" ";
+    for(size_t j=0; j<vocabulary_[i].size();j++){
+      if (vocabulary_[i][j] == '<'){
+        break;
+      }
+      file<<vocabulary_[i][j]<<" ";
+    }
+    file<<"|\n";
+  }
+  file.close();
   }
   vocab_ = &model_->BaseVocabulary();
   if (!vocab_) {
     throw std::runtime_error("[KenLM] LM vocabulary loading failed.");
   }
-
+  
   // Create index map
   usrToLmIdxMap_.resize(usrTknDict.indexSize());
   for (int i = 0; i < usrTknDict.indexSize(); i++) {
