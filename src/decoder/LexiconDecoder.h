@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include "Trie.h"
 #include "Decoder.h"
-#include "../../src/lm/LM.h" 
+#include "src/lm/LM.h" 
 using namespace std;
 namespace w2l {
 /**
