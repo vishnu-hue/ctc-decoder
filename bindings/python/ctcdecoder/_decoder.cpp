@@ -9,10 +9,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "../../src/decoder/LexiconDecoder.h"
+#include "src/decoder/LexiconDecoder.h"
 
 #ifdef W2L_LIBRARIES_USE_KENLM
-#include "../../src/lm/KenLM.h"
+#include "src/lm/KenLM.h"
 #endif
 
 namespace py = pybind11;
@@ -150,9 +150,10 @@ PYBIND11_MODULE(_decoder, m) {
 #ifdef W2L_LIBRARIES_USE_KENLM
   py::class_<KenLM, KenLMPtr, LM>(m, "KenLM")
       .def(
-          py::init<const std::string&, const Dictionary&>(),
+          py::init<const std::string&, const Dictionary&, const bool>(),
           "path"_a,
-          "usr_token_dict"_a);
+          "usr_token_dict"_a,
+          "create"_a);
 #endif
 
   py::enum_<CriterionType>(m, "CriterionType")
