@@ -46,9 +46,6 @@ KenLM::KenLM(const std::string& path, const Dictionary& usrTknDict, const bool c
   for (size_t i = 0; i < vocabulary_.size(); ++i) {
     file<<vocabulary_[i]<<" ";
     for(size_t j=0; j<vocabulary_[i].size();j++){
-      if (vocabulary_[i][j] == '<'){
-        break;
-      }
       file<<vocabulary_[i][j]<<" ";
     }
     file<<"|\n";
