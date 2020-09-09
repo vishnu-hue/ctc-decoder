@@ -12,7 +12,10 @@ def merge_ctc_output(results,sil_idx,blank_idx,token_dict,no_predictions)->list:
                     for idx in results[i].tokens:
                         if idx != -1 and idx != prev_token and (idx != sil_idx or silence == False):
                             if idx != blank_idx and idx != sil_idx:
-                                prediction=prediction+token_dict.get_entry(idx)
+                                if type(token_dict) != list:
+                                    prediction=prediction+token_dict.get_entry(idx)
+                                else:
+                                    prediction=prediction+token_dict[idx]
                                 positions.append(pos)
                                 prev_token = idx
                                 silence = False
