@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 __all__ = ["common", "decoder","decoderfree"]
-def merge_ctc_output(results,sil_idx,blank_idx,token_dict,no_predictions)->list:
+def merge_ctc_outputs(results,sil_idx,blank_idx,token_dict,no_predictions)->list:
     merged_results = []
     positions = []
     for i in range(min(no_predictions, len(results))):
