@@ -215,7 +215,7 @@ if __name__ == "__main__":
     print("expected output:the fake friend of the famly hae te")
     print(f"Decoding complete, obtained {len(results)} results")
     print("Showing top 5 results:")
-    merged_results=merge_ctc_output(results,sil_idx,blank_idx,token_dict,5)
+    merged_results,_=merge_ctc_output(results,sil_idx,blank_idx,token_dict,5)
     for i in range(len(merged_results)):
         print(f"score={merged_results[i][0]} prediction='{merged_results[i][1]}'")
     print("expected output:the fake friend of the famly hae taira pt")
