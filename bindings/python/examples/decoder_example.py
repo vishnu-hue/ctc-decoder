@@ -17,6 +17,7 @@ from ctcdecoder.decoder import (
     SmearingMode,
     Trie,
 )
+from ctcdecoder import merge_ctc_output
 
 
 # def ptr_as_bytes(x):
@@ -105,14 +106,11 @@ if __name__ == "__main__":
     #T, N = load_tn(os.path.join(data_path, "TN.bin"))
     # load emissions [Batch=1, Time, Ntokens]
     #emissions = load_emissions(os.path.join(data_path, "emission.bin"))
-    emissions = softmax(loadRNNOutput('/home/local/ZOHOCORP/vishnu-pt3475/Downloads/CTCDecoder/data/line/rnnOutput.csv'))
+    emissions = softmax(loadRNNOutput(os.path.join(data_path,'line/rnnOutput.csv')))
     T,N=emissions.shape
     emissions=np.log(emissions)
     emissions.resize(T*N)
-    print(emissions)
-    print(type(emissions))
-    print(emissions.shape)
-    emissions1= softmax(loadRNNOutput('/home/local/ZOHOCORP/vishnu-pt3475/Downloads/CTCDecoder/data/word/rnnOutput.csv'))
+    emissions1= softmax(loadRNNOutput(os.path.join(data_path,'word/rnnOutput.csv')))
     T1,N1=emissions1.shape
     emissions1=np.log(emissions1)
     emissions1.resize(T1*N1)
@@ -130,8 +128,10 @@ if __name__ == "__main__":
     # add repetition symbol as soon as we have ASG acoustic model
     #token_dict.add_entry("1")
     # create Kenlm language model
-    lm = KenLM(os.path.join(data_path, "lm.arpa"), word_dict, False)
-
+    lm = KenLM(os.path.join(data_path, "lm.arpa"), word_dict,False)
+    #lexicon = load_words("words.lst")
+    #word_dict = create_word_dict(lexicon)
+    #lm = KenLM(os.path.join(data_path, "lm.arpa"), word_dict,False)
     # test LM
     sentence = ["the", "cat", "sat", "on", "the", "mat"]
     # start LM with nothing, get its current state
@@ -215,13 +215,9 @@ if __name__ == "__main__":
     print("expected output:the fake friend of the famly hae te")
     print(f"Decoding complete, obtained {len(results)} results")
     print("Showing top 5 results:")
-    for i in range(min(5, len(results))):
-        prediction = []
-        for idx in results[i].tokens:
-            if idx !=-1:
-               prediction.append(token_dict.get_entry(idx))
-        prediction = " ".join(prediction)
-        print(f"score={results[i].score} prediction='{prediction}'")
+    merged_results=merge_ctc_output(results,sil_idx,blank_idx,token_dict,5)
+    for i in range(len(merged_results)):
+        print(f"score={merged_results[i][0]} prediction='{merged_results[i][1]}'")
     print("expected output:the fake friend of the famly hae taira pt")
     decoder.decode_step(emissions1, T1, N1)
     results=decoder.get_all_final_hypothesis()
