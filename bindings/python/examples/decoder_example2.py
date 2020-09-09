@@ -98,7 +98,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     data_path = sys.argv[1]
-    mat = softmax(loadRNNOutput('/home/local/ZOHOCORP/vishnu-pt3475/Downloads/CTCDecoder/data/line/rnnOutput.csv'))
+    mat = softmax(loadRNNOutput(os.path.join(data_path,'line/rnnOutput.csv')))
     T,N=mat.shape
     mat=np.log(mat)
     mat.resize(T*N)
