@@ -3,9 +3,10 @@
 __all__ = ["common", "decoder","decoderfree"]
 def merge_ctc_output(results,sil_idx,blank_idx,token_dict,no_predictions)->list:
     merged_results = []
+    positions = []
     for i in range(min(no_predictions, len(results))):
                     prediction = str()
-                    positions = []
+                    position = []
                     prev_token = -1
                     silence = False
                     pos = 0
@@ -16,23 +17,22 @@ def merge_ctc_output(results,sil_idx,blank_idx,token_dict,no_predictions)->list:
                                     prediction=prediction+token_dict.get_entry(idx)
                                 else:
                                     prediction=prediction+token_dict[idx]
-                                positions.append(pos)
+                                position.append(pos)
                                 prev_token = idx
                                 silence = False
                             elif idx == sil_idx:
-                                #prediction=prediction+" "
                                 silence = True
-                                #positions.append(pos)
                             elif idx == blank_idx:
                                 prev_token = idx
                                 silence = False
-                        if idx != -1 and idx != prev_token and silence and idx ==sil_idx:
+                        if idx != -1 and idx != prev_token and silence and idx == sil_idx:
                             prediction=prediction+" "
                             prev_token = idx
-                            positions.append(pos)
+                            position.append(pos)
                             silence = False
                         pos += 1
                     scores = results[i].score
                     merged_result = (scores,prediction)
                     merged_results.append(merged_result)
-    return merged_results
+                    positions.append(position)
+    return merged_results, positions
