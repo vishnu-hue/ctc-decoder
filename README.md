@@ -5,6 +5,12 @@ kenlm
 
 to build kenlm :
 
+pip install packaging
+
+pip install torch
+
+pip install numpy
+
 apt-get install zlibc zlib1g zlib1g-dev libeigen3-dev bzip2 liblzma-dev libboost-all-dev
 
 > wget http://kheafield.com/code/kenlm.tar.gz
