@@ -67,10 +67,10 @@ struct DecoderOptions {
 struct DecodeResult {
   double score;
   std::vector<int> words;
-  std::vector<int> tokens;
+  string tokens;
 
   explicit DecodeResult(int length = 0)
-      : score(0), words(length, -1), tokens(length, -1) {}
+      : score(0), words(length, -1), tokens(to_string(' ')) {}
 };
 
 /* ===================== Candidate-related operations ===================== */
@@ -110,6 +110,7 @@ void candidatesAdd(
   }
     if(insert)
     {
+      label.append(to_string(-1));
       label.append(to_string(n));
     }
     candidates.emplace_back(score ,nb_score,b_score,label ,args...);
@@ -171,7 +172,7 @@ void candidatesStore(
         if(candidatePtrs[i]->nb_score==0 && candidatePtrs[i]->b_score==0)
         {
           
-          candidatePtrs[i]->score=-10000;
+          candidatePtrs[i]->score=0;
           
         }
         else if(candidatePtrs[i]->b_score==0)
@@ -189,9 +190,17 @@ void candidatesStore(
         }
   }
   /* 3. Sort and prune */
-  auto compareNodeScore = [](const DecoderState* node1,
-                             const DecoderState* node2) {
-    return node1->score > node2->score;
+  auto compareNodeScore = [](const DecoderState* x,
+                             const DecoderState* y) {
+    if (x->score == y->score) {
+    if (x->token == y->token) {
+      return false;
+    } else {
+      return (x->token < y->token);
+    }
+  } else {
+    return x->score > y->score;
+  }
   };
 
   int nValidHyp = candidatePtrs.size();
@@ -230,10 +239,10 @@ DecodeResult getHypothesis(const DecoderState* node, const int finalFrame) {
   int i = 0;
   while (node_) {
     res.words[finalFrame - i] = node_->getWord();
-    res.tokens[finalFrame - i] = node_->token;
     node_ = node_->parent;
     i++;
   }
+  res.tokens=node->label;
   return res;
 }
 
