@@ -16,9 +16,9 @@ from ctcdecoder.decoder import (
     LexiconDecoder,
     SmearingMode,
     Trie,
+    create_word_file,
 )
-from ctcdecoder import merge_ctc_outputs
-
+np.set_printoptions(threshold=sys.maxsize)
 
 # def ptr_as_bytes(x):
 #     return struct.pack("P", x)
@@ -105,7 +105,6 @@ if __name__ == "__main__":
     # load time and number of tokens for dumped acoustic scores
     #T, N = load_tn(os.path.join(data_path, "TN.bin"))
     # load emissions [Batch=1, Time, Ntokens]
-    #emissions = load_emissions(os.path.join(data_path, "emission.bin"))
     emissions = softmax(loadRNNOutput(os.path.join(data_path,'line/rnnOutput.csv')))
     T,N=emissions.shape
     emissions=np.log(emissions)
@@ -114,7 +113,7 @@ if __name__ == "__main__":
     T1,N1=emissions1.shape
     emissions1=np.log(emissions1)
     emissions1.resize(T1*N1)
-    # load transitions (from ASG loss optimization) [Ntokens, Ntokens]
+    word_file = create_word_file(str(os.path.join(data_path, "lm.arpa")),str('abcd'))
     transitions = load_transitions(os.path.join(data_path, "transition.bin"))
     # load lexicon file, which defines spelling of words
     # the format word and its tokens spelling separated by the spaces,
@@ -128,7 +127,7 @@ if __name__ == "__main__":
     # add repetition symbol as soon as we have ASG acoustic model
     #token_dict.add_entry("1")
     # create Kenlm language model
-    lm = KenLM(os.path.join(data_path, "lm.arpa"), word_dict,False)
+    lm = KenLM(os.path.join(data_path, "lm.arpa"), word_dict)
     #lexicon = load_words("words.lst")
     #word_dict = create_word_dict(lexicon)
     #lm = KenLM(os.path.join(data_path, "lm.arpa"), word_dict,False)
@@ -198,7 +197,7 @@ if __name__ == "__main__":
     #                 word_score, unk_score, sil_score,
     #                 eos_score, log_add, criterion_type (CTC))
     opts = DecoderOptions(
-        100, 40, 100.0, 0.0, 0.0, -math.inf, -1, 0, True, CriterionType.CTC
+        100, 80, 100.0, 0.0, 0.0, -math.inf, -1, 0, True, CriterionType.CTC
     )
 
     # define lexicon beam-search decoder with word-level lm
@@ -215,19 +214,26 @@ if __name__ == "__main__":
     print("expected output:the fake friend of the famly hae te")
     print(f"Decoding complete, obtained {len(results)} results")
     print("Showing top 5 results:")
-    merged_results,_=merge_ctc_outputs(results,sil_idx,blank_idx,token_dict,5)
-    for i in range(len(merged_results)):
-        print(f"score={merged_results[i][0]} prediction='{merged_results[i][1]}'")
-    print("expected output:the fake friend of the famly hae taira pt")
+    for i in range(min(1, len(results))):
+        predictions = []
+        prediction = str()
+        result=results[i].tokens.split('-1')
+        print(result)
+        for idx in result:
+            if idx!='':
+                index=int(idx)
+                prediction+=token_dict.get_entry(index)
+        print(f"score={results[i].score} prediction='{prediction}'")
     decoder.decode_step(emissions1, T1, N1)
     results=decoder.get_all_final_hypothesis()
     print(f"Decoding complete, obtained {len(results)} results")
     print("Showing top 5 results:")
     for i in range(min(5, len(results))):
-        prediction = []
-        for idx in results[i].tokens:
-            if idx !=-1:
-               prediction.append(token_dict.get_entry(idx))
-        prediction = " ".join(prediction)
+        predictions = []
+        prediction = str()
+        result=results[i].tokens.split('-1')
+        for idx in result:
+            if idx!='' and int(idx)!=sil_idx:
+                prediction+=token_dict.get_entry(int(idx))
         print(f"score={results[i].score} prediction='{prediction}'")
 
