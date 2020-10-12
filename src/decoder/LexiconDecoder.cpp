@@ -100,7 +100,7 @@ void LexiconDecoder::decodeStep(const std::vector<float>& emissions, int T, int 
               -1,
               prevHyp.lmScore+lmScore);}
         }
-        else if(n!=blank_ && n==prevHyp.token) 
+        if(n!=blank_ && n==prevHyp.token) 
         {
           
           if(prevHyp.b_score!=0)
@@ -122,9 +122,9 @@ void LexiconDecoder::decodeStep(const std::vector<float>& emissions, int T, int 
               prevHyp.lmScore+lmScore);
           }
         }
-          for (auto label : lex->labels){
+          for (auto l : lex->labels){
            if (!isLmToken_) {
-            auto lmStateScorePair = lm_->score(prevHyp.lmState, label);
+            auto lmStateScorePair = lm_->score(prevHyp.lmState, l);
             lmState = lmStateScorePair.first;
             lmScore = lmStateScorePair.second;
           }
@@ -142,7 +142,7 @@ void LexiconDecoder::decodeStep(const std::vector<float>& emissions, int T, int 
               lexicon_->getRoot(),
               &prevHyp,
               n,
-              label,
+              l,
               prevHyp.lmScore+lmScore);
         }
       } 
@@ -163,6 +163,25 @@ void LexiconDecoder::decodeStep(const std::vector<float>& emissions, int T, int 
               prevIdx,
               -1,
               prevHyp.lmScore);}
+      else
+      {
+        candidatesAdd(
+              candidates_,
+              candidatesBestScore_,
+              opt_.beamThreshold,
+              prevIdx,
+              false,
+              0,
+              0,
+              prevHyp.score+emissions[t*N+blank_],
+              prevHyp.label,
+              prevHyp.lmState,
+              prevLex,
+              &prevHyp,
+              prevIdx,
+              -1,
+              prevHyp.lmScore);
+      }
     }
     candidatesStore(
         candidates_,
