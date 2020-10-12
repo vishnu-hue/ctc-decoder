@@ -65,17 +65,16 @@ struct LexiconDecoderState {
         lmScore(0.){}
 
   int compareNoScoreStates(const LexiconDecoderState* node) const {
-    if(label!=node->label) 
-    {
-      return label>node->label? 1:-1;
+    int lmCmp = lmState->compare(node->lmState);
+    if (lmCmp != 0) {
+      return lmCmp > 0 ? 1 : -1;
     }
-    //int lmCmp = lmState->compare(node->lmState);
-    //if (lmCmp != 0) {
-      //return lmCmp > 0 ? 1 : -1;
-    //}
     else if(lex!=node->lex)
     {
       return lex>node->lex ? 1: -1;
+    }
+    else if (token != node->token) {
+      return token > node->token ? 1 : -1;
     }
     return 0;
   }
