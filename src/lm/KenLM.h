@@ -50,7 +50,7 @@ struct KenLMState : LMState {
  */
 class KenLM : public LM {
  public:
-  KenLM(const std::string& path, const Dictionary& usrTknDict, const bool create);
+  KenLM(const std::string& path, const Dictionary& usrTknDict);
 
   LMStatePtr start(bool startWithNothing) override;
 
@@ -66,5 +66,11 @@ class KenLM : public LM {
 };
 
 using KenLMPtr = std::shared_ptr<KenLM>;
+
+class create_word_file{
+  std::shared_ptr<lm::base::Model> model_;
+  public:
+  create_word_file(const std::string& path, const std::string& letters);
+};
 
 } // namespace w2l
