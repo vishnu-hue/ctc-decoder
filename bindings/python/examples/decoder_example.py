@@ -218,7 +218,6 @@ if __name__ == "__main__":
         predictions = []
         prediction = str()
         result=results[i].tokens.split('-1')
-        print(result)
         for idx in result:
             if idx!='':
                 index=int(idx)
@@ -233,7 +232,7 @@ if __name__ == "__main__":
         prediction = str()
         result=results[i].tokens.split('-1')
         for idx in result:
-            if idx!='' and int(idx)!=sil_idx:
+            if idx!='':
                 prediction+=token_dict.get_entry(int(idx))
         print(f"score={results[i].score} prediction='{prediction}'")
 
