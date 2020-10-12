@@ -69,32 +69,6 @@ class PyLM : public LM {
  * To define custom LM you can introduce map inside LM which maps LMstate to
  * additional state info (shared pointers pointing to the same underlying object
  * will have the same id in python in functions score and finish)
- *
- * ```python
- * from wav2letter.decoder import LM
- * class MyPyLM(LM):
- *      mapping_states = dict() # store simple additional int for each state
- *
- *      def __init__(self):
- *          LM.__init__(self)
- *
- *       def start(self, start_with_nothing):
- *          state = LMState()
- *          self.mapping_states[state] = 0
- *          return state
- *
- *      def score(self, state, index):
- *          outstate = state.child(index)
- *          if outstate not in self.mapping_states:
- *              self.mapping_states[outstate] = self.mapping_states[state] + 1
- *          return (outstate, -numpy.random.random())
- *
- *      def finish(self, state):
- *          outstate = state.child(-1)
- *          if outstate not in self.mapping_states:
- *              self.mapping_states[outstate] = self.mapping_states[state] + 1
- *          return (outstate, -1)
- *```
  */
 void LexiconDecoder_decodeStep(
     LexiconDecoder& decoder,
@@ -150,10 +124,13 @@ PYBIND11_MODULE(_decoder, m) {
 #ifdef W2L_LIBRARIES_USE_KENLM
   py::class_<KenLM, KenLMPtr, LM>(m, "KenLM")
       .def(
-          py::init<const std::string&, const Dictionary&, const bool>(),
+          py::init<const std::string&, const Dictionary&>(),
           "path"_a,
-          "usr_token_dict"_a,
-          "create"_a);
+          "usr_token_dict"_a);
+  py::class_<create_word_file>(m,"create_word_file")
+      .def(py::init<const std::string&, const std::string&>(),
+        "path"_a,
+        "letters"_a);
 #endif
 
   py::enum_<CriterionType>(m, "CriterionType")
