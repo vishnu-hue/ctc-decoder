@@ -77,7 +77,7 @@ void LexiconFreeDecoder::decodeStep(const std::vector<float>& emissions, int T, 
               prevHyp.label,
               &prevHyp,
               n);
-        }else if(n!=blank_ && n==prevHyp.token) 
+        }if(n!=blank_ && n==prevHyp.token) 
         {
           candidatesAdd(
               candidates_,
@@ -90,7 +90,7 @@ void LexiconFreeDecoder::decodeStep(const std::vector<float>& emissions, int T, 
               prevHyp.score+emissions[t*N+blank_],
               prevHyp.label,
               &prevHyp,
-              n);
+              n);}
           if(prevHyp.b_score!=0 && n==prevHyp.token)
           {candidatesAdd(
               candidates_,
@@ -105,10 +105,24 @@ void LexiconFreeDecoder::decodeStep(const std::vector<float>& emissions, int T, 
               &prevHyp,
               n);
           }
-        }   
+        }
+        if(prevHyp.token==-1)
+          {
+            candidatesAdd(
+              candidates_,
+              candidatesBestScore_,
+              opt_.beamThreshold,
+              prevHyp.token,
+              false,
+              0,
+              0,
+              prevHyp.score+emissions[t*N+blank_],
+              prevHyp.label,
+              &prevHyp,
+              prevHyp.token);
+          }   
       }
       
-    }
     candidatesStore(
         candidates_,
         candidatePtrs_,
