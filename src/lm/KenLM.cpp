@@ -22,44 +22,17 @@
 using namespace std;
 namespace w2l {
 
-KenLM::KenLM(const std::string& path, const Dictionary& usrTknDict, const bool create) {
+KenLM::KenLM(const std::string& path, const Dictionary& usrTknDict) {
   // Load LM
-  size_t max_order_=0;
-  std::vector<std::string> vocabulary_;
-  RetriveStrEnumerateVocab enumerate;
-  lm::ngram::Config config;
-  config.enumerate_vocab = &enumerate;
-  model_.reset(lm::ngram::LoadVirtual(path.c_str(), config));
+  model_.reset(lm::ngram::LoadVirtual(path.c_str()));
   if (!model_) {
     throw std::runtime_error("[KenLM] LM loading failed.");
-  }
-  max_order_ = static_cast<std::shared_ptr<lm::base::Model>>(model_)->Order();
-  vocabulary_ = enumerate.vocabulary;
-  /*
-  if create is set a new words.lst file will be created which can be used to create a word dict.
-  this can be used when a proper words.lst file is not available for the lm model
-  but the lm should be loaded again with the new word dict created 
-  */
-  if(create){
-  ofstream file;
-  file.open("words.lst");
-  for (size_t i = 0; i < vocabulary_.size(); ++i) {
-    if (vocabulary_[i][0] == '<'){
-      continue;
-    }
-    file<<vocabulary_[i]<<" ";
-    for(size_t j=0; j<vocabulary_[i].size();j++){
-      file<<vocabulary_[i][j]<<" ";
-    }
-    file<<"|\n";
-  }
-  file.close();
   }
   vocab_ = &model_->BaseVocabulary();
   if (!vocab_) {
     throw std::runtime_error("[KenLM] LM vocabulary loading failed.");
   }
-  
+
   // Create index map
   usrToLmIdxMap_.resize(usrTknDict.indexSize());
   for (int i = 0; i < usrTknDict.indexSize(); i++) {
@@ -102,4 +75,40 @@ std::pair<LMStatePtr, float> KenLM::finish(const LMStatePtr& state) {
   return std::make_pair(std::move(outState), score);
 }
 
+create_word_file::create_word_file(const std::string&path, const std::string& letters){
+  size_t max_order_=0;
+  std::vector<std::string> vocabulary_;
+  RetriveStrEnumerateVocab enumerate;
+  lm::ngram::Config config;
+  config.enumerate_vocab = &enumerate;
+  model_.reset(lm::ngram::LoadVirtual(path.c_str(), config));
+  if (!model_) {
+    throw std::runtime_error("[KenLM] LM loading failed.");
+  }
+  max_order_ = static_cast<std::shared_ptr<lm::base::Model>>(model_)->Order();
+  vocabulary_ = enumerate.vocabulary;
+  ofstream file;
+  file.open("words.lst");
+  for (size_t i = 0; i < vocabulary_.size(); ++i) {
+    if (vocabulary_[i][0] == '<'){
+      continue;
+    }
+    file<<vocabulary_[i]<<" ";
+    for(size_t j=0; j<vocabulary_[i].size();j++){
+      file<<vocabulary_[i][j]<<" ";
+    }
+    file<<"|\n";
+  }
+  file.close();
+  file.open("letters.lst");
+  for(int i=0; i<letters.size(); i++){
+    if(i!=letters.size()-1){
+      file<<letters[i]<<"\n";
+    }
+    else{
+      file<<letters[i];
+    }
+  }
+  file.close();
+}
 } // namespace w2l
