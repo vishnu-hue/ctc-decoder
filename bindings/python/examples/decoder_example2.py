@@ -111,7 +111,7 @@ if __name__ == "__main__":
     #                 word_score, unk_score, sil_score,
     #                 eos_score, log_add, criterion_type (CTC))
     opts = DecoderOptions(
-        100, 40, 100.0, 2.0, 2.0, -math.inf, -1, 0, False, CriterionType.CTC
+        100, 80, 100.0, 2.0, 2.0, -math.inf, -1, 0, False, CriterionType.CTC
     )
 
     # define lexicon beam-search decoder with word-level lm
@@ -129,10 +129,11 @@ if __name__ == "__main__":
     print(f"Decoding complete, obtained {len(results)} results")
     print("Showing top 5 results:")
     for i in range(min(5, len(results))):
-        prediction = []
-        for idx in results[i].tokens:
-            if idx!=-1:
-               prediction.append(token_dict[idx])
-        prediction = " ".join(prediction)
-        print(f"score={results[i].score} prediction='{prediction}'")
-
+        predictions = []
+        prediction = str()
+        result=results[i].tokens.split('-1')
+        for idx in result:
+            if idx!='':
+                index=int(idx)
+                prediction+=token_dict[index]
+        print(f"score={results[i].score} prediction='{prediction}'")  
